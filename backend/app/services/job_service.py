@@ -1,15 +1,17 @@
 import logging
 from uuid import UUID
 
+from fastapi import BackgroundTasks, UploadFile
+
 from app.models.job import Job
 from app.repositories.job_repository import JobRepository
+from app.utils.file_manager import save_image
+from app.workers.generation_worker import GenerationWorker
 
 logger = logging.getLogger(__name__)
 
 
 class JobService:
-    
-
     def __init__(self, repository: JobRepository):
         self.repository = repository
 
@@ -18,7 +20,6 @@ class JobService:
         product_name: str,
         description: str,
     ) -> Job:
-        
 
         logger.info(
             "Creating job for product '%s'",
@@ -40,20 +41,60 @@ class JobService:
 
         return job
 
-    def get_job(self, job_id: UUID) -> Job | None:
+    def create_generation_job(
+        self,
+        db,
+        background_tasks: BackgroundTasks,
+        product_name: str,
+        description: str,
+        image: UploadFile,
+    ) -> Job:
         
+
+        logger.info(
+            "Creating generation job for '%s'",
+            product_name,
+        )
+
+        image_path = save_image(image)
+
+        job = Job(
+            product_name=product_name,
+            description=description,
+            input_image=image_path,
+            status="pending",
+        )
+
+        job = self.repository.create(job)
+
+        worker = GenerationWorker(db)
+
+        background_tasks.add_task(
+            worker.process_job,
+            job.id,
+        )
+
+        logger.info(
+            "Generation job %s queued",
+            job.id,
+        )
+
+        return job
+
+    def get_job(self, job_id: UUID) -> Job | None:
+
         logger.info("Fetching job %s", job_id)
 
         return self.repository.get_by_id(job_id)
 
     def list_jobs(self) -> list[Job]:
-        
+
         logger.info("Fetching all jobs")
 
         return self.repository.list()
 
     def update_job(self, job: Job) -> Job:
-        
+
         logger.info("Updating job %s", job.id)
 
         updated_job = self.repository.update(job)
@@ -63,7 +104,7 @@ class JobService:
         return updated_job
 
     def delete_job(self, job: Job) -> None:
-        
+
         logger.info("Deleting job %s", job.id)
 
         self.repository.delete(job)
