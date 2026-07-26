@@ -18,23 +18,32 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "https://minicontentengine.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Generated images
 app.mount(
     "/generated",
     StaticFiles(directory="uploads/generated"),
     name="generated",
 )
+
+
+@app.get("/")
+def root():
+    return {
+        "message": "Mini Content Engine API",
+        "status": "running",
+        "docs": "/docs",
+        "health": "/health",
+    }
 
 
 @app.middleware("http")
