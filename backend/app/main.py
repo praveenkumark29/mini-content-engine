@@ -2,11 +2,13 @@ import logging
 import time
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.logging import configure_logging
-from fastapi.staticfiles import StaticFiles
+
 configure_logging()
 
 logger = logging.getLogger(__name__)
@@ -15,6 +17,19 @@ app = FastAPI(
     title=settings.APP_NAME,
     version="1.0.0",
 )
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Generated images
 app.mount(
     "/generated",
     StaticFiles(directory="uploads/generated"),
@@ -24,7 +39,6 @@ app.mount(
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    
     start_time = time.perf_counter()
 
     response = await call_next(request)
