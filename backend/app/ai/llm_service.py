@@ -1,16 +1,18 @@
-from app.ai.llm_service import LLMService
+from app.ai.factory import LLMFactory
 
 
-class PromptService:
+class LLMService:
+    """High-level service for prompt generation."""
+
     def __init__(self):
-        self.llm = LLMService()
+        self.provider = LLMFactory.create()
 
     def generate_prompt(
         self,
         product_name: str,
         description: str,
     ) -> str:
-        return self.llm.generate_prompt(
+        return self.provider.generate_prompt(
             product_name=product_name,
             description=description,
         )

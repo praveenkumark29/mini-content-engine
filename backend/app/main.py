@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.logging import configure_logging
-
+from fastapi.staticfiles import StaticFiles
 configure_logging()
 
 logger = logging.getLogger(__name__)
@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title=settings.APP_NAME,
     version="1.0.0",
+)
+app.mount(
+    "/generated",
+    StaticFiles(directory="uploads/generated"),
+    name="generated",
 )
 
 
