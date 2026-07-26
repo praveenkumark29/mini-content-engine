@@ -59,7 +59,7 @@ class GenerationWorker:
             
             logger.info("Generating image...")
 
-            image_url = self.image_service.generate_image(prompt)
+            image_url = self.image_service.generate_image(prompt=prompt,input_image=job.input_image,)
 
             logger.info("Image generated successfully.")
 

@@ -1,3 +1,6 @@
+import shutil
+from pathlib import Path
+
 from app.image.provider import ImageProvider
 from app.utils.file_manager import (
     generate_image_filename,
@@ -7,12 +10,16 @@ from app.utils.file_manager import (
 
 class MockImageProvider(ImageProvider):
 
-    def generate_image(self, prompt: str) -> str:
+    def generate_image(
+        self,
+        prompt: str,
+        input_image: str,
+    ) -> str:
+
         filename = generate_image_filename()
 
-        path = get_generated_image_path(filename)
+        destination = get_generated_image_path(filename)
 
-    
-        path.write_bytes(b"")
+        shutil.copy(Path(input_image), destination)
 
         return f"/generated/{filename}"
