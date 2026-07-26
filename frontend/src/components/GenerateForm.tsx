@@ -13,7 +13,7 @@ export default function GenerateForm() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
+    const API_BASE_URL = "https://mini-content-engine-j7wd.onrender.com";
     const submit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -40,7 +40,7 @@ export default function GenerateForm() {
 
             setJob(response.data);
 
-            // Reset form
+           
             setProductName("");
             setDescription("");
             setImage(null);
@@ -215,16 +215,16 @@ export default function GenerateForm() {
                             <h3>Generated Image</h3>
 
                             <img
-                                src={`http://localhost:8000${job.output_image}`}
-                                alt="Generated"
-                                style={{
-                                    width: "100%",
-                                    maxWidth: "450px",
-                                    borderRadius: "12px",
-                                    border: "1px solid #ddd",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,.1)",
-                                }}
-                            />
+    src={`${API_BASE_URL}${job.output_image}`}
+    alt="Generated"
+    style={{
+        width: "100%",
+        maxWidth: "450px",
+        borderRadius: "12px",
+        border: "1px solid #ddd",
+        boxShadow: "0 4px 12px rgba(0,0,0,.1)",
+    }}
+/>
                         </div>
                     )}
                 </div>
