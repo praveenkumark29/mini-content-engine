@@ -9,5 +9,9 @@ class ImageService:
     def generate_image(
         self,
         prompt: str,
+        input_image: str,
     ) -> str:
-        return self.provider.generate_image(prompt)
+        return self.provider.generate_image(
+            prompt=prompt,
+            input_image=input_image,
+        )
